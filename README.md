@@ -6,7 +6,11 @@
 
 # polyaxon-examples
 
-Code for polyaxon tutorials and examples.
+Code for polyaxon tutorials and examples for the Polyaxon v0.4 version.
+
+This code for examples used for [Polyaxon v0.4 version](https://v0-4.polyaxon.com/)
+
+> If you are looking for the examples used for latest version please go to the [master branch](https://github.com/polyaxon/polyaxon-examples)
 
 This repository contains examples of using Polyaxon with all major Machine Learning and Deep Learning libraries, 
 including fastai, torch, sklearn, chainer, caffe, keras, tensorflow, mxnet, and Jupyter notebooks.
@@ -22,11 +26,11 @@ The examples have a comment `# Polyaxon` to show what is added to a raw code to 
 
 ### Getting Started
 
-If you are new to Polyaxon we recommend reading our [quick-start](https://docs.polyaxon.com/quick_start/) guide which explains some of the core Platform capabilities.
+If you are new to Polyaxon we recommend reading our [quick-start](https://v0-4.polyaxon.com/concepts/quick-start/) guide which explains some of the core Platform capabilities.
 
 ### Setup & Installation
 
-Please check our [documentation](https://docs.polyaxon.com) to learn about how to deploy Polyaxon.
+Please check our [documentation](https://v0-4.polyaxon.com) to learn about how to deploy Polyaxon.
 
 All examples (in-cluster and on other examples running on other platforms) require our [client](https://github.com/polyaxon/polyaxon-client) to track and add instrumentation to the experiments.
  
