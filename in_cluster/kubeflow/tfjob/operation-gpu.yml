@@ -5,4 +5,4 @@ runPatch:
     resources:
       limits:
         nvidia.com/gpu: 1
-pathRef: ./component.yaml
+urlRef: https://raw.githubusercontent.com/polyaxon/polyaxon-examples/master/in_cluster/kubeflow/tfjob/component.yaml

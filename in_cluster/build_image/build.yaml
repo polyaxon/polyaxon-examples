@@ -4,7 +4,7 @@ name: build
 params:
   destination:
     value:
-      name: polyaxon/polyaxon-quick-start
+      name: polyaxon/polyaxon-examples
       connection: docker-connection
 runPatch:
   init:
