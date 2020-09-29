@@ -11,7 +11,7 @@
 
 Code for polyaxon tutorials and examples.
 
-This is the code used for [latest version of Polyaxon](https://docs.polyaxon.com/concepts/quick_start/)
+This is the code used for [latest version of Polyaxon](https://polyaxon.com/docs/intro/quick_start/)
 
 
 This repository contains examples of using Polyaxon with all major Machine Learning and Deep Learning libraries, 
@@ -28,11 +28,11 @@ The examples have a comment `# Polyaxon` to show what is added to a raw code to 
 
 ### Getting Started
 
-If you are new to Polyaxon we recommend reading our [quick-start](https://docs.polyaxon.com/concepts/quick-start/) guide which explains some of the core Platform capabilities.
+If you are new to Polyaxon we recommend reading our [quick-start](https://polyaxon.com/docs/intro/quick-start/) guide which explains some of the core Platform capabilities.
 
 ### Setup & Installation
 
-Please check our [documentation](https://docs.polyaxon.com) to learn about how to deploy Polyaxon.
+Please check our [documentation](https://polyaxon.com/docs/) to learn about how to deploy Polyaxon.
 
 All examples (in-cluster and on other examples running on other platforms) require our [client](https://github.com/polyaxon/polyaxon-client) to track and add instrumentation to the experiments.
  
