@@ -19,12 +19,13 @@ run:
     workingDir: "{{ globals.artifacts_path }}/polyaxon-examples/in_cluster/xgboost/boston"
     command: ["python", "-u", "model.py"]
     args: [
-      "max_depth={{ max_depth }}",
-      "eta={{ eta }}",
-      "gamma={{ gamma }}",
-      "subsample={{ subsample }}",
-      "lambda={{ lambda }}",
-      "alpha={{ alpha }}",
-      "objective={{ objective }}",
-      "cross_validate={{ cross_validate }}",
+      "--max_depth={{ max_depth }}",
+      "--eta={{ eta }}",
+      "--gamma={{ gamma }}",
+      "--subsample={{ subsample }}",
+      "--lambda={{ lambda }}",
+      "--alpha={{ alpha }}",
+      "--objective={{ objective }}",
+      "--cross_validate={{ cross_validate }}",
     ]
+
