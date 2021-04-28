@@ -3,7 +3,7 @@ kind: operation
 matrix:
   kind: random
   concurrency: 10
-  numRuns: 50
+  numRuns: 20
   params:
     conv1_size:
       kind: choice

@@ -3,6 +3,7 @@ kind: operation
 matrix:
   kind: grid
   concurrency: 5
+  numRuns: 20
   params:
     conv1_size:
       kind: choice
