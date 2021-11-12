@@ -18,6 +18,7 @@ kind: PersistentVolumeClaim
 apiVersion: v1
 metadata:
   name: polyaxon-pvc-data
+  namespace: polyaxon
 spec:
   accessModes:
     - ReadWriteMany
