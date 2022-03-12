@@ -8,9 +8,9 @@ params:
 runPatch:
   init:
   - dockerfile:
-      image: tensorflow/tensorflow:2.2.2
+      image: tensorflow/tensorflow:2.8.0
       run:
       - 'pip3 install --no-cache-dir -U polyaxon["s3","gcs","azure","polyboard","polytune"]'
-      - pip3 install scikit-learn matplotlib vega-datasets
+      - pip3 install scikit-learn matplotlib vega-datasets seaborn
       langEnv: 'en_US.UTF-8'
 hubRef: kaniko

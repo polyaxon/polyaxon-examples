@@ -8,7 +8,7 @@ params:
 runPatch:
   init:
   - dockerfile:
-      image: "tensorflow/tensorflow:2.2.2"
+      image: "tensorflow/tensorflow:2.8.0"
       run:
       - 'pip3 install --no-cache-dir -U polyaxon'
       - pip3 install keras
