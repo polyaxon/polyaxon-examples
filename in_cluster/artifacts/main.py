@@ -33,7 +33,7 @@ def get_accuracy(loss):
 
 
 def get_text(step):
-    return 'Some test generated at step {}, this is part of a Polyaxon example.'.format(step)
+    return 'Some text generated at step {}, this is part of a Polyaxon example.'.format(step)
 
 
 def get_html(step):
@@ -68,6 +68,11 @@ def log_images(step):
 def get_dist(step):
     x = np.random.random(1000)
     return x + step
+
+
+def get_np_hist(step):
+    values, counts = np.histogram(np.random.randint(255, size=(1000,)))
+    return {"values": values, "counts": counts, "step": step}
 
 
 def get_audio(step):
@@ -124,7 +129,7 @@ def get_sin_plot(step):
 
 
 def plot_mpl_figure(step):
-    np.random.seed(19680801)
+    np.random.seed(step)
     data = np.random.randn(2, 100)
 
     figure, axs = plt.subplots(2, 2, figsize=(5, 5))
@@ -280,10 +285,19 @@ def log_curves(step):
                           step=step)
 
     # Random curve
-    # TODO: FIX
-    tracking.TRACKING_RUN.log_curve(
+    tracking.log_curve(
         name='random-curve-man', x=np.random.randn(100), y=np.random.randn(100), step=step
     )
+
+    # Confusion matrix
+    z = [[0.1, 0.3, 0.5, 0.2],
+     [1.0, 0.8, 0.6, 0.1],
+     [0.1, 0.3, 0.6, 0.9],
+     [0.6, 0.4, 0.2, 0.2]]
+
+    x = ['healthy', 'multiple diseases', 'rust', 'scab']
+    y = ['healthy', 'multiple diseases', 'rust', 'scab']
+    tracking.log_confusion_matrix("confusion_test", x, y, z, step=step)
 
 
 def train_network():
@@ -354,6 +368,8 @@ def main():
 
     for i in range(args.steps):
         logger.info('Step %s', i)
+        # Progress
+        tracking.log_progress((i + 1) / args.steps)
         # Scalars
         loss = get_loss(i)
         accuracy = get_accuracy(loss)
@@ -365,6 +381,8 @@ def main():
 
         # Dist
         tracking.log_histogram('distribution', get_dist(i), 'auto', step=i)
+        # np Hist
+        tracking.log_np_histogram('np-hist', **get_np_hist(i))
 
         # Text
         tracking.log_text('text-ex', text=get_text(i), step=i)
@@ -379,14 +397,14 @@ def main():
 
         time.sleep(0.25)
 
-    plot_scatter(100)
-    get_sin_plot(100)
-    plot_mpl_figure(100)
-    log_bokeh(100)
-    log_altair(100)
-    log_curves(100)
-    log_plotly(100)
-    log_curves(100)
+    for i in range(5):
+      plot_scatter(i)
+      get_sin_plot(i)
+      plot_mpl_figure(i)
+      log_bokeh(i)
+      log_altair(i)
+      log_curves(i)
+      log_plotly(i)
 
     train_network()
 

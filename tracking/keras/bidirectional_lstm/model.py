@@ -115,8 +115,7 @@ if __name__ == '__main__':
     args = parser.parse_args()
 
     # Polyaxon
-    experiment = Run(project='bidirectional-lstm')
-    experiment.create(tags=['examples', 'keras'])
+    experiment = Run(project='iris', tags=['examples', 'keras'])
     experiment.log_inputs(max_features=args.max_features,
                           skip_top=args.skip_top,
                           maxlen=args.maxlen,

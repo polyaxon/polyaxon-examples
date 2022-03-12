@@ -50,8 +50,7 @@ if __name__ == '__main__':
     args = parser.parse_args()
 
     # Polyaxon
-    experiment = Run(project='iris')
-    experiment.create(tags=['examples', 'xgboost'])
+    experiment = Run(project='iris', tags=['examples', 'xgboost'])
     experiment.log_inputs(log_learning_rate=args.log_learning_rate,
                           max_depth=args.max_depth,
                           num_rounds=args.num_rounds,

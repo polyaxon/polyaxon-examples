@@ -7,8 +7,8 @@ from keras.layers import Dense, Conv2D, Dropout, Flatten, MaxPooling2D
 from keras.models import Sequential
 
 # Polyaxon
-from polyaxon.tracking import Run
-
+from polyaxon import tracking
+from polyaxon.tracking.contrib.keras import PolyaxonCallback
 
 OPTIMIZERS = {
     'adam': optimizers.Adam,
@@ -50,7 +50,7 @@ def train(conv1_size, conv2_size, dropout, hidden1_size, optimizer, log_learning
         metrics=['accuracy'],
     )
 
-    model.fit(x_train, y_train, epochs=epochs, batch_size=100)
+    model.fit(x_train, y_train, epochs=epochs, batch_size=100, callbacks=[PolyaxonCallback()])
 
     return model.evaluate(x_test, y_test)[1]
 
@@ -94,9 +94,8 @@ if __name__ == '__main__':
     args = parser.parse_args()
 
     # Polyaxon
-    experiment = Run(project='mnist')
-    experiment.create(tags=['keras'])
-    experiment.log_inputs(conv1_size=args.conv1_size,
+    tracking.init(project='demo', tags=['keras'])
+    tracking.log_inputs(conv1_size=args.conv1_size,
                           conv2_size=args.conv2_size,
                           dropout=args.dropout,
                           hidden1_size=args.hidden1_size,
@@ -107,10 +106,10 @@ if __name__ == '__main__':
     (x_train, y_train), (x_test, y_test) = mnist.load_data()
 
     # Polyaxon
-    experiment.log_data_ref(content=x_train, name='x_train')
-    experiment.log_data_ref(content=y_train, name='y_train')
-    experiment.log_data_ref(content=x_test, name='x_test')
-    experiment.log_data_ref(content=y_test, name='y_test')
+    tracking.log_data_ref(content=x_train, name='x_train')
+    tracking.log_data_ref(content=y_train, name='y_train')
+    tracking.log_data_ref(content=x_test, name='x_test')
+    tracking.log_data_ref(content=y_test, name='y_test')
 
     x_train, y_train, x_test, y_test = transform_data(x_train, y_train, x_test, y_test)
     accuracy = train(conv1_size=args.conv1_size,
@@ -122,4 +121,4 @@ if __name__ == '__main__':
                      epochs=args.epochs)
 
     # Polyaxon
-    experiment.log_outputs(accuracy=accuracy)
+    tracking.log_outputs(eval_accuracy=accuracy)
