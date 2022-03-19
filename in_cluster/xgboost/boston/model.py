@@ -71,7 +71,7 @@ if __name__ == '__main__':
     }
 
     # Polyaxon
-    tracking.init()
+    tracking.init(is_offline=True)
 
     boston = load_boston()
     data = pd.DataFrame(boston.data)
@@ -84,19 +84,20 @@ if __name__ == '__main__':
     tracking.log_data_ref(content=X_train, name='x_train')
     tracking.log_data_ref(content=y_train, name='y_train')
     tracking.log_data_ref(content=X_test, name='X_test')
-    tracking.log_data_ref(content=y_test, name='y_train')
+    tracking.log_data_ref(content=y_test, name='y_test')
+    callback = polyaxon_callback()
 
     dtrain = xgb.DMatrix(X_train, label=y_train)
     dtest = xgb.DMatrix(X_test, label=y_test)
 
     if args.cross_validate:
-        xgb.cv(params, dtrain, num_boost_round=20, nfold=7, callbacks=[polyaxon_callback()])
+        xgb.cv(params, dtrain, num_boost_round=20, nfold=7, callbacks=[callback])
     else:
         xgb.train(
             params,
             dtrain,
             20,
             [(dtest, 'eval'), (dtrain, 'train')],
-            callbacks=[polyaxon_callback()]  # Polyaxon
+            callbacks=[callback]
         )
 

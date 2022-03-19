@@ -66,7 +66,7 @@ if __name__ == '__main__':
     experiment.log_data_ref(content=X_train, name='x_train')
     experiment.log_data_ref(content=y_train, name='y_train')
     experiment.log_data_ref(content=X_test, name='X_test')
-    experiment.log_data_ref(content=y_test, name='y_train')
+    experiment.log_data_ref(content=y_test, name='y_test')
 
     logger.info('Train model...')
     accuracy = model(log_learning_rate=args.log_learning_rate,
