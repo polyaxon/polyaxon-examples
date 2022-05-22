@@ -71,7 +71,7 @@ if __name__ == '__main__':
     }
 
     # Polyaxon
-    tracking.init(is_offline=True)
+    tracking.init()
 
     boston = load_boston()
     data = pd.DataFrame(boston.data)

@@ -30,8 +30,7 @@ if __name__ == '__main__':
     args = parser.parse_args()
 
     # Polyaxon
-    experiment = Run(project='newsgroup')
-    experiment.create(tags=['examples', 'scikit-learn'])
+    experiment = Run(project='newsgroup', tags=['examples', 'scikit-learn'])
     experiment.log_inputs(ngram_range=(args.ngram, args.ngram),
                           max_features=args.max_features,
                           max_df=args.max_df,

@@ -63,4 +63,4 @@ if __name__ == "__main__":
         model_path = os.path.join(d, "model.pkl")
         with open(model_path, "wb") as out:
             pickle.dump(gbc, out)
-        tracking.log_model(model_path, name="model", framework="scikit-learn", versioned=False)
+        tracking.log_model(model_path, name="model", framework="scikit-learn")

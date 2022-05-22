@@ -51,8 +51,7 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     # Polyaxon
-    experiment = Run(project='sgd-classifier')
-    experiment.create(tags=['examples', 'scikit-learn'])
+    experiment = Run(project='sgd-classifier', tags=['examples', 'scikit-learn'], is_new=True)
     experiment.log_inputs(loss=args.loss,
                           penalty=args.penalty,
                           l1_ratio=args.l1_ratio,

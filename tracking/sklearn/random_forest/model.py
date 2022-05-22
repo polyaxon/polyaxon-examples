@@ -42,8 +42,7 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     # Polyaxon
-    experiment = Run(project='random-forest')
-    experiment.create(tags=['examples', 'scikit-learn'])
+    experiment = Run(project='random-forest', tags=['examples', 'scikit-learn'])
     experiment.log_inputs(n_estimators=args.n_estimators,
                           max_features=args.max_features,
                           min_samples_leaf=args.min_samples_leaf)
