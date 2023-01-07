@@ -39,4 +39,4 @@ In order to run these examples, you need to deploy a Polyaxon with a scheduling 
 
 ### Tracking Examples
 
-These examples should can run outside of a Polyaxon cluster.
+These examples should run outside of a Polyaxon cluster.

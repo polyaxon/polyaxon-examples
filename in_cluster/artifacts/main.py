@@ -83,8 +83,8 @@ def get_audio(step):
 
 
 def plot_scatter(step):
-    x = np.random.randn(1000)
-    y = np.random.randn(1000)
+    x = np.random.randn(step)
+    y = np.random.randn(step)
 
     left, width = 0.1, 0.65
     bottom, height = 0.1, 0.65
@@ -94,7 +94,7 @@ def plot_scatter(step):
     rect_histx = [left, bottom + height + spacing, width, 0.2]
     rect_histy = [left + width + spacing, bottom, 0.2, height]
 
-    plt.figure(figsize=(8, 8))
+    figure = plt.figure(figsize=(8, 8))
 
     ax_scatter = plt.axes(rect_scatter)
     ax_scatter.tick_params(direction='in', top=True, right=True)
@@ -115,22 +115,22 @@ def plot_scatter(step):
 
     ax_histx.set_xlim(ax_scatter.get_xlim())
     ax_histy.set_ylim(ax_scatter.get_ylim())
-    tracking.log_mpl_plotly_chart(name='scatter', figure=plt, step=step)
+    tracking.log_mpl_plotly_chart(name='scatter', figure=figure, step=step)
 
 
 def get_sin_plot(step):
-    x = np.linspace(0, 2 * np.pi, 400)
+    x = np.linspace(0, step * np.pi, 400)
     y = np.sin(x ** 2)
 
     f, ax = plt.subplots()
     ax.plot(x, y)
     ax.set_title('Simple plot')
-    tracking.log_mpl_plotly_chart(name='sin', figure=plt, step=step)
+    tracking.log_mpl_plotly_chart(name='sin', figure=f, step=step)
 
 
 def plot_mpl_figure(step):
     np.random.seed(step)
-    data = np.random.randn(2, 100)
+    data = np.random.randn(2, 20 * step)
 
     figure, axs = plt.subplots(2, 2, figsize=(5, 5))
     axs[0, 0].hist(data[0])
@@ -279,25 +279,27 @@ def log_curves(step):
     ]
     tracking.log_roc_auc_curve(name='roc-curve-man', fpr=x, tpr=y, auc=0.742149, step=step)
 
-    x = [0.66666667, 0.5, 1., 1.]
-    y = [1., 0.5, 0.5, 0.]
+    x = np.array([0.66666667, 0.5, 1., 1.]) * ((5 - step) / 15)
+    y = np.array([1., 0.5, 0.5, 0.]) * ((5 - step) / 15)
     tracking.log_pr_curve(name='pr-curve-man', precision=x, recall=y, average_precision=0.742149,
                           step=step)
 
     # Random curve
     tracking.log_curve(
-        name='random-curve-man', x=np.random.randn(100), y=np.random.randn(100), step=step
+        name='random-curve-man', x=np.random.randn(10 * step), y=np.random.randn(10 * step), step=step
     )
 
+
+def log_confusion(step):
     # Confusion matrix
-    z = [[0.1, 0.3, 0.5, 0.2],
+    z = np.array([[0.1, 0.3, 0.5, 0.2],
      [1.0, 0.8, 0.6, 0.1],
      [0.1, 0.3, 0.6, 0.9],
-     [0.6, 0.4, 0.2, 0.2]]
+     [0.6, 0.4, 0.2, 0.2]]) * step
 
     x = ['healthy', 'multiple diseases', 'rust', 'scab']
     y = ['healthy', 'multiple diseases', 'rust', 'scab']
-    tracking.log_confusion_matrix("confusion_test", x, y, z, step=step)
+    tracking.log_confusion_matrix("confusion_test", x, y, z.tolist(), step=step)
 
 
 def train_network():
@@ -397,13 +399,14 @@ def main():
 
         time.sleep(0.25)
 
-    for i in range(5):
+    for i in range(1, 10):
       plot_scatter(i)
       get_sin_plot(i)
       plot_mpl_figure(i)
       log_bokeh(i)
       log_altair(i)
       log_curves(i)
+      log_confusion(i)
       log_plotly(i)
 
     train_network()
