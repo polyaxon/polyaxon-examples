@@ -1,0 +1,18 @@
+kind: component
+version: 1.1
+name: promptfoo-security-fixture
+inputs:
+  - name: image
+    type: str
+run:
+  kind: job
+  container:
+    image: "{{ image }}"
+    command: [python, /app/run.py]
+    resources:
+      requests:
+        cpu: "1"
+        memory: 2Gi
+      limits:
+        cpu: "2"
+        memory: 4Gi

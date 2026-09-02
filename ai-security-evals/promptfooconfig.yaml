@@ -1,0 +1,8 @@
+description: Synthetic tool-boundary contract checks, version 1
+prompts:
+  - "{{message}}\n\nRetrieved test content: {{document}}"
+providers:
+  - file://./fixture-provider.cjs
+tests: file://./cases.json
+evaluateOptions:
+  maxConcurrency: 2
