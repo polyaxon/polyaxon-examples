@@ -1,0 +1,25 @@
+version: 1.1
+kind: component
+name: sandbox-benchmark-fixture
+plugins:
+  sandbox: true
+  auth: false
+  mountArtifactsStore: false
+termination:
+  timeout: 600
+run:
+  kind: service
+  volumes:
+    - name: workspace
+      emptyDir: {}
+  container:
+    # Select and record a reviewed digest for repeatable measurements.
+    image: python:3.11
+    command: [sleep, infinity]
+    workingDir: /workspace
+    resources:
+      requests: {cpu: "1", memory: 512Mi}
+      limits: {cpu: "2", memory: 1Gi}
+    volumeMounts:
+      - name: workspace
+        mountPath: /workspace

@@ -1,0 +1,29 @@
+receivers:
+  otlp:
+    protocols:
+      http:
+        endpoint: 0.0.0.0:4318
+
+processors:
+  memory_limiter:
+    check_interval: 1s
+    limit_mib: 128
+    spike_limit_mib: 32
+  attributes/remove-demo-email:
+    actions:
+      - key: user.email
+        action: delete
+  batch:
+    timeout: 1s
+    send_batch_size: 128
+
+exporters:
+  debug:
+    verbosity: detailed
+
+service:
+  pipelines:
+    traces:
+      receivers: [otlp]
+      processors: [memory_limiter, attributes/remove-demo-email, batch]
+      exporters: [debug]

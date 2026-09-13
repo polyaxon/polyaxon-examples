@@ -1,0 +1,64 @@
+{
+  "fixture_only": true,
+  "description": "Illustrative records for a failure after publication but before local receipt commitment; IDs are not live resources.",
+  "task_before_recovery": {
+    "task_id": "review-42",
+    "state_revision": 17,
+    "state": "publishing",
+    "attempt": 1,
+    "polyaxon_run_uuid": "RUN_UUID_ATTEMPT_1",
+    "report_revision": "report-v3",
+    "report_digest": "ILLUSTRATIVE_REPORT_DIGEST",
+    "approval": {
+      "status": "approved",
+      "report_revision": "report-v3",
+      "destination": "team-reports",
+      "reviewer": "authorized-reviewer-7"
+    },
+    "action": {
+      "key": "review-42:publish:report-v3",
+      "arguments_digest": "ILLUSTRATIVE_ARGUMENTS_DIGEST",
+      "destination": "team-reports",
+      "receipt": null
+    }
+  },
+  "destination_ledger": {
+    "action_key": "review-42:publish:report-v3",
+    "arguments_digest": "ILLUSTRATIVE_ARGUMENTS_DIGEST",
+    "destination": "team-reports",
+    "status": "accepted",
+    "receipt_id": "publication-901"
+  },
+  "expected_recovery": {
+    "read_expected_state_revision": 17,
+    "new_attempt": 2,
+    "polyaxon_run_uuid": "RUN_UUID_ATTEMPT_2",
+    "query_destination_with_original_action_key": true,
+    "verify_arguments_and_destination": true,
+    "publish_again": false,
+    "conditional_commit": {
+      "expected_state_revision": 17,
+      "new_state_revision": 18,
+      "state": "completed",
+      "receipt_id": "publication-901"
+    }
+  },
+  "alternative_cases": [
+    {
+      "case": "destination-lookup-unavailable",
+      "expected": "Keep outcome uncertain; do not infer absence or dispatch a new publication"
+    },
+    {
+      "case": "state-revision-changed-to-cancel-requested",
+      "expected": "Conditional commit fails; reload, retain the observed publication receipt, and report the completed external effect without starting new work"
+    },
+    {
+      "case": "cancellation-committed-before-dispatch",
+      "expected": "Late approval cannot leave canceled state; no publication is sent"
+    },
+    {
+      "case": "report-revised-after-approval",
+      "expected": "Create a new report revision and action identity; require review of the changed content"
+    }
+  ]
+}

@@ -1,0 +1,28 @@
+version: 1.1
+kind: component
+name: ml-service-load-test
+inputs:
+  - name: target
+    type: str
+run:
+  kind: job
+  container:
+    image: registry.example.com/ml/load-test:REPLACE_WITH_IMMUTABLE_TAG
+    env:
+      - name: TARGET
+        value: "{{ target }}"
+      - name: REPORT_DIR
+        value: "{{ globals.run_outputs_path }}/load-test"
+    resources:
+      requests:
+        cpu: "1"
+        memory: 256Mi
+      limits:
+        cpu: "2"
+        memory: 512Mi
+    command: [sh, -ec]
+    args:
+      - |
+        mkdir -p "$REPORT_DIR"
+        k6 run -e PHASE=warmup -e RATE=2 -e DURATION_SECONDS=10 /scripts/load-test.js
+        exec k6 run -e PHASE=measurement -e RATE=10 -e DURATION_SECONDS=60 /scripts/load-test.js

@@ -1,0 +1,25 @@
+version: 1.1
+kind: component
+name: sandbox-benchmark-controller
+inputs:
+  - {name: workspace_policy, type: str, value: fresh}
+  - {name: repetitions, type: int, value: 5}
+  - {name: profile, type: str, value: cpu-1-memory-512Mi}
+  - {name: target_project, type: str}
+termination:
+  timeout: 1800
+  maxRetries: 0
+run:
+  kind: job
+  container:
+    # Build a reviewed image with benchmark.py, lifecycle.py, task.py,
+    # sandbox.yaml, and a deployment-compatible Polyaxon client in /app.
+    image: registry.example.com/team/sandbox-benchmark:reviewed
+    workingDir: /app
+    command: [python, benchmark.py]
+    args:
+      - "--mode={{ workspace_policy }}"
+      - "--repetitions={{ repetitions }}"
+      - "--profile={{ profile }}"
+      - "--project={{ target_project }}"
+      - "--track"

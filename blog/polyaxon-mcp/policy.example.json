@@ -1,0 +1,20 @@
+{
+  "actors": {
+    "local-reviewer": {
+      "owner": "YOUR_ORG",
+      "project": "agent-evaluations",
+      "operation": "operation.yaml",
+      "max_submissions": 10,
+      "datasets": {
+        "tickets-v1": {
+          "manifest": "/evaluation-data/manifest.json",
+          "predictions": {"agent-v12": "/evaluation-data/accepted.json"}
+        },
+        "tickets-rejected": {
+          "manifest": "/evaluation-data/manifest.json",
+          "predictions": {"agent-v12": "/evaluation-data/rejected.json"}
+        }
+      }
+    }
+  }
+}

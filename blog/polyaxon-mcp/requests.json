@@ -1,0 +1,32 @@
+[
+  {
+    "case": "valid",
+    "tool": "submit_evaluation",
+    "arguments": {"request": {"request_key": "review-001", "dataset": "tickets-v1", "candidate": "agent-v12"}},
+    "expected": "submitted; record the returned request_id and run_uuid"
+  },
+  {
+    "case": "duplicate-identical",
+    "tool": "submit_evaluation",
+    "arguments": {"request": {"request_key": "review-001", "dataset": "tickets-v1", "candidate": "agent-v12"}},
+    "expected": "same request_id and run_uuid; no second submission"
+  },
+  {
+    "case": "duplicate-changed",
+    "tool": "submit_evaluation",
+    "arguments": {"request": {"request_key": "review-001", "dataset": "tickets-rejected", "candidate": "agent-v12"}},
+    "expected": "rejected; the existing request remains unchanged"
+  },
+  {
+    "case": "forbidden-dataset",
+    "tool": "submit_evaluation",
+    "arguments": {"request": {"request_key": "review-002", "dataset": "private-orders", "candidate": "agent-v12"}},
+    "expected": "rejected before submission"
+  },
+  {
+    "case": "model-selected-project",
+    "tool": "submit_evaluation",
+    "arguments": {"request": {"request_key": "review-003", "dataset": "tickets-v1", "candidate": "agent-v12", "project": "production"}},
+    "expected": "schema error; no submission"
+  }
+]

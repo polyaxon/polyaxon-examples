@@ -1,0 +1,10 @@
+version: 1.1
+kind: operation
+name: mcp-ticket-evaluation
+# Register the component from the shared evaluator article first.
+hubRef: YOUR_ORG/exact-match-evaluator:v2
+cache:
+  disable: true
+termination:
+  timeout: 300
+  maxRetries: 0

@@ -1,0 +1,7 @@
+{
+  "candidate_revision": "agent-v12",
+  "records": [
+    {"id": "ticket-1", "actual": "billing"},
+    {"id": "ticket-1", "actual": "billing"}
+  ]
+}

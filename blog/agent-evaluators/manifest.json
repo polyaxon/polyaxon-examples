@@ -1,0 +1,7 @@
+{
+  "dataset_revision": "ticket-routing-v1",
+  "cases": [
+    {"id": "ticket-1", "expected": "billing"},
+    {"id": "ticket-2", "expected": "technical support"}
+  ]
+}
