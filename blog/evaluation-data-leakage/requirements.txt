@@ -1,0 +1,2 @@
+# Compatible API range; record resolved versions for each execution.
+scikit-learn>=1.5,<2
