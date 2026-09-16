@@ -36,17 +36,17 @@ Real evaluation datasets need an access boundary around held-out labels. This pu
 
 ## Run the audit as a Polyaxon job
 
-Use a configured Polyaxon CLI/project with support for declarative `mount` uploads and an artifact store. The job uses the standard `python:3.12-slim` image and installs its dependencies at startup. The cluster needs access to that image and to PyPI or your configured package mirror.
+Use a configured Polyaxon CLI/project and an artifact store. The job uses the standard `python:3.12-slim` image and installs its dependencies at startup. The cluster needs access to that image and to PyPI or your configured package mirror.
 
 From this companion directory, submit:
 
 ```bash
-polyaxon run -f polyaxonfile.yaml
+polyaxon run -f polyaxonfile.yaml -u
 ```
 
-The `mount` list uploads only `fixture.py`, `prepare.py`, `tracked.py`, and `requirements.txt` into the run's `code` directory. The CLI performs these uploads before the job starts; no extra `-u` flag is needed. Existing local outputs and virtual environments are not included.
+The `-u/--upload` flag packages this local folder and uploads it under the run's `uploads` directory before the job starts. The container uses that directory as its working directory. The included `.polyaxonignore` excludes local virtual environments, Python caches, and previous output directories.
 
-The container runs `python -m pip install --no-cache-dir -r requirements.txt polyaxon` before starting the tracked audit. Installation failure stops the job. Each run includes dependency download/install time. The default SDK install resolves the current package version; if your deployment requires a specific SDK version, replace `polyaxon` in the installation command with its supported version, such as `polyaxon==YOUR_VERSION`.
+The container runs `python -m pip install --no-cache-dir -r requirements.txt` before starting the tracked audit. That file includes both scikit-learn and Polyaxon. Installation failure stops the job. Each run includes dependency download/install time. The default SDK requirement resolves the current package version; if your deployment requires a specific SDK version, pin the `polyaxon` entry in `requirements.txt` to that supported version.
 
 The tracked runner saves `resolved-requirements.txt` alongside its other reports. For repeatable comparisons, use those reviewed exact versions as the installation requirements (including the SDK), and pin the base image digest. Recording resolved versions explains a run; it does not by itself make a later installation identical.
 

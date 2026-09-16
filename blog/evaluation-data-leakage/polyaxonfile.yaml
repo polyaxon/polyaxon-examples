@@ -1,26 +1,18 @@
 version: 1.1
 kind: component
 name: evaluation-split-audit
-mount:
-  - "fixture.py:code"
-  - "prepare.py:code"
-  - "tracked.py:code"
-  - "requirements.txt:code"
 run:
   kind: job
   container:
     image: python:3.12-slim
-    workingDir: "{{ globals.run_artifacts_path }}/code"
+    workingDir: "{{ globals.run_artifacts_path }}/uploads"
     command: [sh, -c]
     args:
       - |
         set -eu
-        python -m pip install --no-cache-dir -r requirements.txt polyaxon
+        python -m pip install --no-cache-dir -r requirements.txt
         exec python tracked.py
     resources:
       requests:
         cpu: "1"
         memory: 1Gi
-      limits:
-        cpu: "2"
-        memory: 2Gi
