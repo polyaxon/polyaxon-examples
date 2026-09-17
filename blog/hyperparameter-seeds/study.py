@@ -3,6 +3,7 @@
 import argparse
 import hashlib
 import json
+import math
 from pathlib import Path
 import platform
 import statistics
@@ -48,8 +49,8 @@ def train(alpha, seed, x_train, y_train):
     return model
 
 
-def summarize(records):
-    expected = {(candidate, seed) for candidate in CANDIDATES for seed in SEEDS}
+def summarize(records, candidates, seeds):
+    expected = {(candidate, seed) for candidate in candidates for seed in seeds}
     observed = [(row["candidate"], row["seed"]) for row in records]
     complete = (len(observed) == len(expected) and set(observed) == expected
                 and all(row["status"] == "completed" for row in records))
@@ -58,29 +59,44 @@ def summarize(records):
                 "completed_trials": sum(row["status"] == "completed" for row in records),
                 "message": "Resolve missing, duplicate, or failed trials before comparing finalists."}
     by_pair = {(row["candidate"], row["seed"]): row for row in records}
+    result = {"status": "complete", "scope": "training-seed variation on one fixed validation split",
+              "candidates": {name: {
+                  "validation_macro_f1": describe([by_pair[name, seed]["validation_macro_f1"] for seed in seeds]),
+                  "fit_seconds": describe([by_pair[name, seed]["fit_seconds"] for seed in seeds])
+              } for name in candidates},
+              "decision": "No automatic winner. Review effect size, variation, failures, and class-level errors."}
+    if set(candidates) != {"A", "B"}:
+        return result
     paired = [{"seed": seed, "A": by_pair["A", seed]["validation_macro_f1"],
                "B": by_pair["B", seed]["validation_macro_f1"],
                "B_minus_A": (by_pair["B", seed]["validation_macro_f1"]
-                             - by_pair["A", seed]["validation_macro_f1"])} for seed in SEEDS]
+                             - by_pair["A", seed]["validation_macro_f1"])} for seed in seeds]
     deltas = [pair["B_minus_A"] for pair in paired]
-    return {"status": "complete", "scope": "training-seed variation on one fixed validation split",
-            "candidates": {name: {
-                "validation_macro_f1": describe([by_pair[name, seed]["validation_macro_f1"]
-                                                  for seed in SEEDS]),
-                "fit_seconds": describe([by_pair[name, seed]["fit_seconds"] for seed in SEEDS])
-            } for name in CANDIDATES},
-            "paired_scores": paired, "paired_difference": describe(deltas),
+    result.update({"paired_scores": paired, "paired_difference": describe(deltas),
             "B_higher_count": sum(delta > 0 for delta in deltas),
             "A_higher_count": sum(delta < 0 for delta in deltas),
             "exact_tie_count": sum(delta == 0 for delta in deltas),
-            "decision": "No automatic winner. Review effect size, variation, failures, and class-level errors."}
+            })
+    return result
 
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--output", type=Path, default=Path("outputs/seed-study"))
     parser.add_argument("--tracked", action="store_true")
+    parser.add_argument("--alpha", type=float, help="Evaluate one matrix-sampled configuration")
+    parser.add_argument("--alpha-a", type=float, default=CANDIDATES["A"])
+    parser.add_argument("--alpha-b", type=float, default=CANDIDATES["B"])
+    parser.add_argument("--seeds", type=int, nargs="+", default=SEEDS)
     args = parser.parse_args()
+    candidates = ({"sampled": args.alpha} if args.alpha is not None
+                  else {"A": args.alpha_a, "B": args.alpha_b})
+    seeds = args.seeds
+    if any(not math.isfinite(alpha) or alpha <= 0 for alpha in candidates.values()):
+        parser.error("alpha must be positive and finite")
+    if (len(seeds) < 2 or len(set(seeds)) != len(seeds)
+            or any(seed < 0 or seed >= 2**32 for seed in seeds)):
+        parser.error("provide at least two distinct seeds in [0, 2**32)")
     tracking = None
     output = args.output
     if args.tracked:
@@ -103,7 +119,7 @@ def main():
     scaler = StandardScaler().fit(x[training])
     x_train, x_validation = scaler.transform(x[training]), scaler.transform(x[validation])
     # Reserved test rows are not transformed, scored, or used for selection.
-    plan = {"candidates_alpha": CANDIDATES, "training_seeds": SEEDS, "epochs": EPOCHS,
+    plan = {"candidates_alpha": candidates, "training_seeds": seeds, "epochs": EPOCHS,
             "loss": "log_loss", "learning_rate": "constant", "eta0": 0.01,
             "split_seeds": [101, 202], "metric": "macro_f1", "labels": LABELS.tolist(),
             "dataset": "sklearn.load_digits", "split_sizes": {k: len(v) for k, v in manifest.items()},
@@ -118,22 +134,22 @@ def main():
                             check=True, capture_output=True, text=True).stdout
     (output / "resolved-requirements.txt").write_text(frozen, encoding="utf-8")
     if tracking:
-        tracking.log_outputs(async_req=False, planned_trials=10, training_epochs=EPOCHS,
+        tracking.log_outputs(async_req=False, planned_trials=len(candidates) * len(seeds), training_epochs=EPOCHS,
                              split_manifest_sha256=plan["manifest_sha256"])
 
     records = []
     with threadpool_limits(limits=1):
-        for seed_index, seed in enumerate(SEEDS, start=1):
+        for seed_index, seed in enumerate(seeds, start=1):
             # Alternate order to avoid always timing one candidate first.
-            names = list(CANDIDATES) if seed_index % 2 else list(reversed(CANDIDATES))
+            names = list(candidates) if seed_index % 2 else list(reversed(candidates))
             for name in names:
-                record = {"candidate": name, "alpha": CANDIDATES[name], "seed": seed,
+                record = {"candidate": name, "alpha": candidates[name], "seed": seed,
                           "seed_index": seed_index, "status": "running"}
                 trial_path = output / f"trial-{name}-{seed}.json"
                 save_json(trial_path, record)
                 start = time.perf_counter()
                 try:
-                    model = train(CANDIDATES[name], seed, x_train, y[training])
+                    model = train(candidates[name], seed, x_train, y[training])
                     fit_seconds = time.perf_counter() - start
                     predictions = model.predict(x_validation)
                     score = float(f1_score(y[validation], predictions, labels=LABELS,
@@ -157,10 +173,15 @@ def main():
                         f"{name}_validation_macro_f1": record["validation_macro_f1"],
                         f"{name}_fit_seconds": record["fit_seconds"]})
 
-    summary = summarize(records)
+    summary = summarize(records, candidates, seeds)
     save_json(output / "summary.json", summary)
     if tracking:
         tracking.log_outputs(async_req=False, panel_status=summary["status"])
+        if summary["status"] == "complete" and args.alpha is not None:
+            stats = summary["candidates"]["sampled"]
+            tracking.log_metrics(validation_macro_f1_mean=stats["validation_macro_f1"]["mean"],
+                                 validation_macro_f1_sd=stats["validation_macro_f1"]["sample_sd"],
+                                 fit_seconds_mean=stats["fit_seconds"]["mean"])
         for path in sorted(output.iterdir()):
             tracking.log_file_ref(path=str(path), name=path.name)
     print(json.dumps(summary, indent=2, sort_keys=True), flush=True)

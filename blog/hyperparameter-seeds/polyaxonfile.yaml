@@ -1,18 +1,31 @@
 version: 1.1
-kind: component
-name: hyperparameter-seed-confirmation
-run:
-  kind: job
-  container:
-    image: python:3.12-slim
-    workingDir: "{{ globals.run_artifacts_path }}/uploads"
-    command: [sh, -c]
-    args:
-      - |
-        set -eu
-        python -m pip install --no-cache-dir -r requirements.txt
-        exec python study.py --tracked
-    resources:
-      requests:
-        cpu: "1"
-        memory: 1Gi
+kind: operation
+name: hyperparameter-seed-random-search
+matrix:
+  kind: random
+  numRuns: 6
+  concurrency: 2
+  seed: 19
+  params:
+    alpha:
+      kind: choice
+      value: [0.00001, 0.00003, 0.0001, 0.0003, 0.001, 0.003, 0.01, 0.03]
+component:
+  inputs:
+    - name: alpha
+      type: float
+  run:
+    kind: job
+    container:
+      image: python:3.12-slim
+      workingDir: "{{ globals.run_artifacts_path }}/uploads"
+      command: [sh, -c]
+      args:
+        - |
+          set -eu
+          python -m pip install --no-cache-dir -r requirements.txt
+          exec python study.py --tracked --alpha {{ alpha }}
+      resources:
+        requests:
+          cpu: "1"
+          memory: 1Gi
