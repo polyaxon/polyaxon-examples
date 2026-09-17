@@ -1,0 +1,18 @@
+version: 1.1
+kind: component
+name: hyperparameter-seed-confirmation
+run:
+  kind: job
+  container:
+    image: python:3.12-slim
+    workingDir: "{{ globals.run_artifacts_path }}/uploads"
+    command: [sh, -c]
+    args:
+      - |
+        set -eu
+        python -m pip install --no-cache-dir -r requirements.txt
+        exec python study.py --tracked
+    resources:
+      requests:
+        cpu: "1"
+        memory: 1Gi
