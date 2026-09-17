@@ -47,7 +47,14 @@ python train.py --output outputs/baseline
 ```
 
 Compare the state tensors and full histories in the final `epoch-0008.pt` files, rather than the
-serialized file bytes. A completed final step alone is insufficient. Across hardware or software
+serialized file bytes:
+
+```bash
+python compare.py outputs/baseline/checkpoints/epoch-0008.pt outputs/recovery/checkpoints/epoch-0008.pt
+```
+
+This prints exact-equality checks per state field and exits nonzero on a mismatch. A completed final
+step alone is insufficient. Across hardware or software
 changes, bitwise equivalence is not promised. No comparison has been executed for this draft.
 
 ## Checkpoint publication and restore policy
@@ -78,7 +85,7 @@ the floating starter environment can change between attempts, in which case rest
 the recorded runtime mismatch.
 
 The included `.polyaxonignore` keeps local environments and outputs out of the folder upload.
-Keep it in the repository even if your global Git ignore file requires explicitly adding it.
+The example's `.gitignore` explicitly includes this file despite the repository-level ignore rule.
 
 ```bash
 polyaxon run -p quick-start -f polyaxonfile.yaml -u
