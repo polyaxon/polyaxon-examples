@@ -1,0 +1,49 @@
+version: 1.1
+kind: component
+name: gpu-sharing-worker
+inputs:
+  - name: experiment
+    type: str
+  - name: node_name
+    type: str
+  - name: mode
+    type: str
+  - name: replica
+    type: int
+  - name: count
+    type: int
+  - name: workload
+    type: str
+    value: train
+termination:
+  timeout: 900
+run:
+  kind: job
+  connections: [gpu-benchmark-sync]
+  environment:
+    nodeSelector:
+      kubernetes.io/hostname: "{{ node_name }}"
+  container:
+    image: pytorch/pytorch:2.7.1-cuda12.6-cudnn9-runtime
+    workingDir: "{{ globals.run_artifacts_path }}/uploads"
+    env:
+      - name: BENCH_NODE
+        valueFrom:
+          fieldRef:
+            fieldPath: spec.nodeName
+    command: [bash, -c]
+    args:
+      - |
+        set -euo pipefail
+        python -m pip install --no-cache-dir polyaxon torchvision==0.22.1
+        python -m pip freeze
+        exec python worker.py --experiment {{ experiment }} --mode {{ mode }} --replica {{ replica }} --count {{ count }} --workload {{ workload }}
+    resources:
+      requests:
+        cpu: "2"
+        memory: 4Gi
+        nvidia.com/gpu: 1
+      limits:
+        cpu: "2"
+        memory: 4Gi
+        nvidia.com/gpu: 1

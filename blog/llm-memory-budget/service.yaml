@@ -1,0 +1,53 @@
+version: 1.1
+kind: component
+name: qwen-memory-study
+inputs:
+  - name: max_model_len
+    type: int
+    value: 4096
+  - name: max_num_seqs
+    type: int
+    value: 8
+termination:
+  timeout: 7200
+plugins:
+  shm: true
+run:
+  kind: service
+  ports: [8000]
+  rewritePath: true
+  container:
+    image: vllm/vllm-openai@sha256:2c908d5a84ed251b6a17d179f42d06df1aff353007779ac5eecd8a0ea3fe9331
+    command: [vllm, serve]
+    args:
+      - Qwen/Qwen3-4B
+      - --revision
+      - 1cfa9a7208912126459214e8b04321603b3df60c
+      - --tokenizer-revision
+      - 1cfa9a7208912126459214e8b04321603b3df60c
+      - --served-model-name
+      - qwen-memory-study
+      - --max-model-len
+      - "{{ max_model_len }}"
+      - --max-num-seqs
+      - "{{ max_num_seqs }}"
+      - --gpu-memory-utilization
+      - "0.85"
+      - --host
+      - "0.0.0.0"
+      - --port
+      - "8000"
+    readinessProbe:
+      httpGet:
+        path: /health
+        port: 8000
+      periodSeconds: 10
+    resources:
+      requests:
+        cpu: "4"
+        memory: 12Gi
+        nvidia.com/gpu: 1
+      limits:
+        cpu: "8"
+        memory: 24Gi
+        nvidia.com/gpu: 1

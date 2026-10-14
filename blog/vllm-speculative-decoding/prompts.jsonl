@@ -1,0 +1,9 @@
+{"id":"copy-01","family":"copy","prompt":"Return the following text exactly, including punctuation, and nothing else: The training worker reads the batch, copies it to the GPU, computes gradients, and updates the weights. The training worker reads the batch, copies it to the GPU, computes gradients, and updates the weights."}
+{"id":"copy-02","family":"copy","prompt":"Return this configuration exactly and nothing else: model: qwen-study\nqueue: research/gpu\nmax_tokens: 128\ntemperature: 0\nmodel: qwen-study\nqueue: research/gpu\nmax_tokens: 128\ntemperature: 0"}
+{"id":"copy-03","family":"copy","prompt":"Return this paragraph exactly and nothing else: A dataset revision identifies the inputs. A model revision identifies the weights. A container digest identifies the environment. A dataset revision identifies the inputs. A model revision identifies the weights. A container digest identifies the environment."}
+{"id":"explain-01","family":"explain","prompt":"Explain in one paragraph why validation data should not be used as training data. Use plain language."}
+{"id":"explain-02","family":"explain","prompt":"Explain in one paragraph why a CUDA operation can return before the GPU has finished executing it."}
+{"id":"explain-03","family":"explain","prompt":"Explain in one paragraph why a Kubernetes Pod requesting a GPU can stay Pending."}
+{"id":"short-01","family":"short","prompt":"In one sentence, define a model checkpoint."}
+{"id":"short-02","family":"short","prompt":"In one sentence, define a held-out test set."}
+{"id":"short-03","family":"short","prompt":"In one sentence, explain what a KV cache stores."}

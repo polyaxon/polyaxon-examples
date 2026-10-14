@@ -1,0 +1,2 @@
+requests==2.32.4
+polyaxon>=2.16.2

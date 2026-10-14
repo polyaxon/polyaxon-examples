@@ -1,0 +1,33 @@
+version: 1.1
+kind: component
+name: profile-pytorch-training
+inputs:
+  - name: mode
+    type: str
+    value: profile
+  - name: workers
+    type: int
+    value: 0
+termination:
+  timeout: 1800
+run:
+  kind: job
+  container:
+    image: pytorch/pytorch:2.7.1-cuda12.6-cudnn9-runtime
+    workingDir: "{{ globals.run_artifacts_path }}/uploads"
+    command: [bash, -c]
+    args:
+      - |
+        set -euo pipefail
+        python -m pip install --no-cache-dir polyaxon torchvision==0.22.1
+        python -m pip freeze
+        exec python profile_train.py --mode {{ mode }} --workers {{ workers }}
+    resources:
+      requests:
+        cpu: "4"
+        memory: 8Gi
+        nvidia.com/gpu: 1
+      limits:
+        cpu: "4"
+        memory: 8Gi
+        nvidia.com/gpu: 1
